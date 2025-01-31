@@ -1,0 +1,72 @@
+syntax = "proto3";
+
+package carsget;
+
+option go_package = "car-recommendation-service/api/proto/generated/carsget";
+
+import "cars.proto";
+
+service Cars {
+    // Select собирает информацию об автомобилях из базы данных для сервиса, 
+    // осуществляющего подбор автомобилей с использованием нечеткого алгоритма
+    rpc Select(CarsSelectionRequest) returns (CarsSelectionResponse);
+
+    // Search собирает информацию об автомобилях из базы данных для сервиса,
+    // осуществляющего поиск автомобилей с помощью фильтров 
+    rpc Search(CarsSearchRequest) returns (CarsSearchResponse);
+}
+
+message CarsSelectionRequest { 
+   // Priorities - приоритеты или нечеткие множества, например,
+   // "Экономичность", "Комфорт", "Управляемость", "Динамика", "Безопасность"
+   repeated string Priorities = 1;  
+
+   // MinPrice - нижний предел цены
+   string MinPrice = 2;
+
+   // MaxPrice - верхний предел цены
+   string MaxPrice = 3;
+
+   // Manufacturers - страны-производители
+   repeated string Manufacturers = 4;  
+}
+
+message CarsSelectionResponse {
+    repeated cars.Car cars = 1;
+}
+
+message CarsSearchRequest { 
+   // Make - марка
+   string Make = 1;
+   
+   // Model - модель
+   string Model = 2;
+
+   // Gearbox - тип трансмиссии
+   string Gearbox = 3;
+
+   // MinPrice - нижний предел цены
+   string MinPrice = 4;
+
+   // MaxPrice - верхний предел цены
+   string MaxPrice = 5;
+
+   // Drive - тип привода
+   string Drive = 6;
+
+   // EarliestYear - самый ранний год выпуска
+   string EarliestYear = 7;
+
+   // LatestYear - самый поздний год выпуска
+   string LatestYear = 8;
+
+   // Fuel - тип топлива
+   string Fuel = 9;
+
+   // IsNewCar - признак, определяющий, ищет ли пользователь новые автомобили
+   string IsNewCar = 10;
+}
+
+message CarsSearchResponse {
+    repeated cars.Car cars = 1;
+}

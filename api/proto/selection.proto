@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package selection;
+
+option go_package = "car-recommendation-service/api/proto/generated/selection";
+
+import "carsget.proto";
+import "google/protobuf/empty.proto";
+
+service Selection {
+    // PerformSelection ответственен за получение списка автомобилей, чьи данные собираются из базы данных под 
+    // управлением PostgreSQL, ранжирование автомобилей с помощью нечеткого алгоритма и 
+    // сохранение этого списка в базе данных под управлением Redis
+    rpc PerformSelection(SelectionRequest) returns (google.protobuf.Empty);
+}
+
+message SelectionRequest {
+    carsget.CarsSelectionRequest Selection = 1;
+    // SessionID - идентификатор сессии
+    string SessionID = 2;
+}

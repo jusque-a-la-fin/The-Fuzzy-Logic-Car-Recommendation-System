@@ -1,0 +1,41 @@
+syntax = "proto3";
+
+package survey;
+
+option go_package = "car-recommendation-service/survey";
+
+import "google/protobuf/empty.proto";
+
+service Survey {
+    // ChooseQuestion выбирает вопрос, на который пользователь еще не отвечал
+    rpc ChooseQuestion(ChooseQuestionRequest) returns (ChooseQuestionResponse);
+
+    // InsertAnswer записывает ответ пользователя в БД
+    rpc InsertAnswer(InsertAnswerRequest) returns (google.protobuf.Empty);
+}
+
+message ChooseQuestionRequest {
+    string UserID = 1;
+}
+
+message ChooseQuestionResponse {
+    // QuestionText - текст вопроса
+    string QuestionText = 1;
+
+    // QuestionID - идентификатор вопроса
+    string QuestionID = 2;
+
+    // PossibleAnswers - варианты ответа
+    repeated string PossibleAnswers = 3;
+}
+
+message InsertAnswerRequest {
+    // UserID - идентификатор пользователя
+    string UserID = 1;
+
+    // QuestionID - идентификатор вопроса
+    string QuestionID = 2;
+
+    // Answer - ответ пользователя
+    string Answer = 3;
+}

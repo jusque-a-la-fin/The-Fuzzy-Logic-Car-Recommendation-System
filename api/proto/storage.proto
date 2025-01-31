@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+package storage;
+
+option go_package = "car-recommendation-service/api/proto/generated/storage";
+
+import "google/protobuf/empty.proto";
+
+import "cars.proto";
+
+
+service Storage {
+    // LoadData загружает в базу данных под управлением Redis данные автомобилей, полученные из базы данных
+    // под управлением PostgreSQL
+    rpc LoadData (LoadDataRequest) returns (google.protobuf.Empty);
+
+    // GetCarsData получает из базы данных под управлением Redis ранее полученные данные автомобилей из 
+    // базы данных под управлением PostgreSQL
+    rpc GetData (GetDataRequest) returns (GetDataResponse);
+}
+
+message LoadDataRequest {
+    // если survey имеет значение true, то это означает, что страница содержит опрос
+    bool survey = 1;
+
+    // sessionID - идентификатор сессии
+    string sessionID = 2;
+
+    repeated cars.Car cars = 3;
+
+    // question - текст вопроса
+    string question = 4;
+
+    // questionID - идентификатор вопроса
+    string questionID = 5;
+
+    // possibleAnswers - варианты ответа на вопрос
+    repeated string possibleAnswers = 6;
+}
+
+message GetDataRequest {
+    // если survey имеет значение true, то это означает, что страница содержит опрос
+    bool survey = 1;
+    
+    // sessionID - идентификатор сессии
+    string sessionID = 2;
+}
+
+message GetDataResponse {
+    repeated cars.Car cars = 1;
+
+    // question - текст вопроса
+    string question = 2;
+
+    // questionID - идентификатор вопроса
+    string questionID = 3;
+
+    // possibleAnswers - варианты ответа на вопрос
+    repeated string possibleAnswers = 4;
+}

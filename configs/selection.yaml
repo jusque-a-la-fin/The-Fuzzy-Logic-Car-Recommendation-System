@@ -1,0 +1,37 @@
+expression: "userID=([0-9a-f-]+).*carID=([0-9a-f-]+)#(.*)"
+
+pattern1: "../../web/templates/*.html"
+pattern2: "../../internal/selection/web/html/*.html"
+pattern3: "../../internal/search/web/templates/survey.html"
+
+path1: "/shared-css"
+root1: "../../web/static/css"
+path2: "/shared-js"
+root2: "../../web/static/js"
+path3: "/shared-images"
+root3: "../../web/static/images"
+path4: "/css"
+root4: "../../internal/selection/web/static/css"
+path5: "/images"
+root5: "../../internal/selection/web/static/images"
+path6: "/js"
+root6: "../../internal/selection/web/static/js"
+
+origin1: "http://localhost:8080"
+method1: "GET"
+method2: "POST"
+method3: "PUT"
+method4: "DELETE"
+header1: "Origin"
+header2: "Content-Length"
+header3: "Content-Type"
+
+
+carRoot: "../assets/users_cars_photos"
+id1: "userID"
+id2: "carID"
+id3: "carName"
+
+addr1: "storage-selection:8083"
+addr2: "selection-service:8086"
+addr: :8082

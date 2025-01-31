@@ -1,0 +1,487 @@
+components:
+  schemas:
+    Сar:
+      type: object
+      description: автомобиль
+      properties:
+        id:
+          type: integer
+
+        fullName:
+          type: string
+          description: название
+
+        description:
+          type: string
+          description: описание
+
+        generation:
+          type: string
+          description: название поколения
+    
+        trimLevel:
+          type: string
+          description: название комплектации
+
+        specs:
+          $ref: '#/components/schemas/Specifications'
+
+        features: 
+          $ref: '#/components/schemas/Features'
+    
+	      offering:
+          $ref: '#/components/schemas/Offering'
+
+    Specifications:
+      type: object
+      description: технические характеристики
+      properties:
+        body:
+          type: string
+          description: тип кузова
+
+        length:
+          type: number
+          description: длина, мм
+
+        width:
+          type: number
+          description: ширина, мм
+
+        height:
+          type: number
+          description: высота, мм
+
+        groundClearance:
+          type: number
+          description: клиренс, мм
+          
+  	    dragCoefficient:
+          type: number
+          description: коэффициент аэродинамического сопротивления, cW
+
+        frontTrackWidth:
+          type: number
+          description: ширина передней колеи, мм
+
+	      backTrackWidth:
+          type: number
+          description: ширина задней колеи, мм
+
+	      wheelbase:
+          type: number
+          description: колесная база, мм
+
+	      acceleration0To100:
+          type: number
+          description: время разгона 0-100 км/ч, с
+
+	      maxSpeed:
+          type: number
+          description: максимальная скорость, км/ч
+
+	      cityFuelConsumption:
+          type: number
+          description: расход топлива в городском цикле, л/100 км
+
+	      highwayFuelConsumption:
+          type: number
+          description: расход топлива за городом, л/100 км
+
+	      mixedFuelConsumption:
+          type: number
+          description: расход топлива в смешанном цикле, л/100 км
+
+	      numberOfSeats:
+          type: integer
+          description: число мест
+
+	      trunkVolume:
+          type: number
+          description: объем багажника, литры
+
+	      mass:
+          type: number
+          description: масса, кг
+
+	      gearbox:
+          type: string
+          description: тип трансмиссии
+
+	      drive:
+          type: string
+          description: тип привода
+
+	      crashTestEstimate:
+          type: number
+          description: баллы за краш-тест
+
+	      engine:
+          $ref: '#/components/schemas/Engine'
+
+	      steeringWheel:
+          $ref: '#/components/schemas/SteeringWheel'
+
+	      suspension:
+          $ref: '#/components/schemas/Suspension'
+
+	      brakes:
+          $ref: '#/components/schemas/Brakes'
+
+	      tires:
+          $ref: '#/components/schemas/Tires'
+
+    Engine:
+      type: object
+      description: двигатель
+      properties:
+	      fuelUsed:
+          type: string
+          description: используемое топливо
+
+	      engineType:
+          type: string
+          description: тип двигателя
+
+        capacity:
+          type: number
+          description: объем двигателя, куб.см
+
+	      maxPower:
+          type: number
+          description: максимальная мощность, л.с.
+
+	      maxTorque:
+          type: string
+          description: максимальный крутящий момент, Н*м (кг*м) при об./мин.
+
+    SteeringWheelPosition:
+      type: string
+      enum: ["Левый руль", "Правый руль", "Неизвестно"]
+      description: положение руля(слева, справа и неизвестно)
+
+    PowerSteering:
+      type: string
+      enum: ["Электроусилитель руля", "Электрогидроусилитель руля", "Гидроусилитель руля", "Нет", "Неизвестно"]
+      description: тип усилителя рулевого управления
+
+    SteeringWheel:
+      type: object
+      description: рулевое колесо
+      properties:
+        steeringWheelPosition:
+          $ref: '#/components/schemas/SteeringWheelPosition'
+
+        powerSteering:
+          $ref: '#/components/schemas/PowerSteering'   
+
+    Availability:
+      type: string
+      enum: ["Есть", "Нет", "Опция производителя", "Неизвестно"]
+      description: наличие опции в автомобиле
+
+    Suspension:
+      type: object
+      description: подвеска
+      properties:
+        frontStabilizer:
+          $ref: '#/components/schemas/Availability' 
+          description: наличие переднего стабилизатора
+
+        backStabilizer:
+          $ref: '#/components/schemas/Availability' 
+          description: наличие заднего стабилизатора
+
+        frontSuspension:
+          type: string
+          description: название типа передней подвески
+
+        backSuspension:
+          type: string
+          description: название типа задней подвески
+
+    Brakes:
+      type: object
+      description: тормоза
+      properties:
+        frontBrakes:
+          type: string
+          description: тип передних тормозов
+
+        backBrakes:
+          type: string
+          description: тип задних тормозов
+
+        parkingBrake:
+          type: string
+          description: тип стояночного тормоза
+
+    Tires:
+      type: object
+      description: шины
+      properties:
+	      frontTiresWidth:
+          type: integer
+          description: ширина передних шин, мм
+
+	      backTiresWidth: 
+	        type: integer
+          description: ширина задних шин, мм
+
+	      frontTiresAspectRatio:
+	        type: integer
+          description: процентное соотношение высоты профиля передних шин к их ширине
+
+	      backTiresAspectRatio: 
+	        type: integer
+          description: процентное соотношение высоты профиля задних шин к их ширине
+
+	      frontTiresRimDiameter: 
+	        type: integer
+          description: диаметр обода передних шин, мм
+
+	      backTiresRimDiameter: 
+          type: integer
+          description: диаметр обода задних шин, мм
+
+    Features:
+      type: object
+      description: опции
+      properties:
+	      safetyAndMotionControlSystem:
+          $ref: '#/components/schemas/SafetyAndMotionControlSystems'
+          description: электронные системы безопасности и контроля движения
+
+	      lights:
+	        $ref: '#/components/schemas/Lights'
+          description: фонари и фары
+
+	      interior:
+	        $ref: '#/components/schemas/Interior'
+          description: интерьер
+
+	      cabinMicroclimate: 
+	        $ref: '#/components/schemas/CabinMicroclimate'
+          description: микроклимат салона
+
+	      electricOptions:
+	        $ref: '#/components/schemas/SetOfElectricOptions'
+          description: пакет электрических опций
+
+	      airbags: 
+	        $ref: '#/components/schemas/SetOfAirbags'
+          description: подушки безопасности
+
+	      multimediaSystems: 
+	        $ref: '#/components/schemas/MultimediaSystems'
+          description: системы мультимедиа
+
+	      carAlarm: 
+	        $ref: '#/components/schemas/Availability' 
+          description: наличие сигнализации
+        
+	      color:
+          type: string
+          description: цвет
+
+    SafetyAndMotionControlSystems:
+      type: object
+      description: электронные системы безопасности и контроля движения
+      properties:
+	      abs: 
+          $ref: '#/components/schemas/Availability' 
+          description: наличие антиблокировочной системы (ABS)
+
+	      esp: 
+	        $ref: '#/components/schemas/Availability' 
+          description: наличие системы электронного контроля устойчивости (ESP)
+
+	      ebd: 
+	        $ref: '#/components/schemas/Availability' 
+          description: наличие системы распределения тормозного усилия (EBD)
+
+	      bas: 
+	        $ref: '#/components/schemas/Availability' 
+          description: наличие вспомогательной системы торможения (BAS)
+
+	      tcs: 
+	        $ref: '#/components/schemas/Availability' 
+          description: наличие антипробуксовочной системы (TCS)
+
+	      frontParkingSensor: 
+	        $ref: '#/components/schemas/Availability' 
+          description: наличие переднего парктроника
+
+	      backParkingSensor: 
+	        $ref: '#/components/schemas/Availability' 
+          description: наличие заднего парктроника
+
+	      rearViewCamera: 
+	        $ref: '#/components/schemas/Availability' 
+          description: наличие камеры заднего обзора
+
+	      cruiseControl: 
+          $ref: '#/components/schemas/Availability' 
+          description: наличие круиз-контроля
+
+    Lights: 
+      type: object
+      description: фонари и фары
+      properties:
+	      headlights: 
+	        type: string
+          description: тип передних фар
+
+	      ledRunningLights: 
+	        $ref: '#/components/schemas/Availability'   
+          description: наличие светодиодных ходовых огней
+
+	      ledTailLights:
+          $ref: '#/components/schemas/Availability' 
+          description: наличие светодиодных задних фонарей
+
+	      lightSensor: 
+	        $ref: '#/components/schemas/Availability' 
+          description: наличие датчика света
+      
+	      frontFogLights:
+	        $ref: '#/components/schemas/Availability' 
+          description: наличие передних противотуманных фар
+      
+	      backFogLights:
+          $ref: '#/components/schemas/Availability' 
+          description: наличие задних противотуманных фонарей
+
+    Interior:
+      type: object
+      description: интерьер
+      properties:
+	      upholstery:
+          type: string
+          description: тип обивки салона
+
+    CabinMicroclimate:
+      type: object
+      description: микроклимат салона
+      properties:
+	      airConditioner: 
+          $ref: '#/components/schemas/Availability' 
+          description: наличие кондиционера
+
+	      climateControl:
+          $ref: '#/components/schemas/Availability' 
+          description: наличие климат-контроля
+
+    SetOfElectricOptions:
+      type: object
+      description: пакет электрических опций
+      properties:
+	      electricFrontSideWindowsLifts:
+	        $ref: '#/components/schemas/Availability' 
+          description: наличие электрических передних стеклоподъемников
+
+	      electricBackSideWindowsLifts: 
+	        $ref: '#/components/schemas/Availability' 
+          description: наличие электрических задних стеклоподъемников
+      
+	      electricHeatingOfFrontSeats:
+          $ref: '#/components/schemas/Availability' 
+          description: наличие электроподогрева передних сидений
+      
+	      electricHeatingOfBackSeats:
+	        $ref: '#/components/schemas/Availability' 
+          description: наличие электроподогрева задних сидений
+      
+	      electricHeatingOfSteeringWheel: 
+	        $ref: '#/components/schemas/Availability' 
+          description: наличие электроподогрева рулевого колеса
+      
+	      electricHeatingOfWindshield: 
+	        $ref: '#/components/schemas/Availability' 
+          description: наличие электроподогрева лобового стекла
+      
+	      electricHeatingOfRearWindow: 
+	        $ref: '#/components/schemas/Availability' 
+          description: наличие обогрева заднего стекла
+      
+	      electricHeatingOfSideMirrors: 
+	        $ref: '#/components/schemas/Availability' 
+          description: наличие электроподогрева боковых зеркал
+      
+	      electricDriveOfDriverSeat: 
+	        $ref: '#/components/schemas/Availability' 
+          description: наличие электропривода водительского сидения
+      
+	      electricDriveOfFrontSeats: 
+	        $ref: '#/components/schemas/Availability' 
+          description: наличие электроприводов передних сидений
+      
+	      electricDriveOfSideMirrors: 
+	        $ref: '#/components/schemas/Availability' 
+          description: наличие электроприводов боковых зеркал
+      
+	      electricTrunkOpener: 
+	        $ref: '#/components/schemas/Availability' 
+          description: наличие электропривода багажника
+      
+	      rainSensor:
+          $ref: '#/components/schemas/Availability' 
+          description: наличие датчика дождя
+
+    SetOfAirbags:
+      type: object
+      description: подушки безопасности 
+      properties:
+	      driverAirbag:
+	        $ref: '#/components/schemas/Availability' 
+          description: наличие водительской подушки безопасности
+      
+	      frontPassengerAirbag: 
+	        $ref: '#/components/schemas/Availability' 
+          description: наличие подушки безопасности переднего пассажира
+      
+	      sideAirbags: 
+	        $ref: '#/components/schemas/Availability' 
+          description: наличие боковых подушек безопасности
+      
+	      curtainAirbags: 
+          $ref: '#/components/schemas/Availability' 
+          description: наличие подушек безопасности-шторок
+
+    MultimediaSystems:
+      type: object
+      description: системы мультимедиа 
+      properties:
+	      onBoardComputer: 
+	        $ref: '#/components/schemas/Availability' 
+          description: наличие бортового компьютера
+      
+	      mp3Support:
+          $ref: '#/components/schemas/Availability' 
+          description: наличие поддержки MP3
+      
+	      handsFreeSupport: 
+          $ref: '#/components/schemas/Availability' 
+          description: наличие поддержки Hands free
+
+    Offering:
+      type: object
+      description: сведения для покупателя
+      properties:
+	      price:
+          type: string
+          description: цена, руб
+
+	      year: 
+          type: integer
+          description: год выпуска
+
+	      kilometrage:
+          type: string
+          description: пробег, км
+
+	      photoURLs: 
+          type: array
+          description: ссылки на фотографии
+          items:
+            type: string

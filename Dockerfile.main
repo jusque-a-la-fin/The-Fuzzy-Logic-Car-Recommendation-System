@@ -1,0 +1,28 @@
+FROM golang:1.23.5 AS build-stage
+
+WORKDIR /main
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY cmd/main/ ./cmd
+COPY internal/main/ ./internal/main
+COPY internal/shared/adapters/ ./internal/shared/adapters
+COPY internal/shared/config/ ./internal/shared/config
+COPY internal/shared/errors/ ./internal/shared/errors
+
+RUN CGO_ENABLED=0 GOOS=linux go build -o main ./cmd
+
+FROM alpine:latest
+
+WORKDIR /main
+
+COPY --from=build-stage /main/main .
+
+COPY configs/main.yaml /configs/
+COPY internal/main/web/ /internal/main/web/ 
+COPY web/ /web/
+
+EXPOSE 8080
+
+CMD ["./main"]

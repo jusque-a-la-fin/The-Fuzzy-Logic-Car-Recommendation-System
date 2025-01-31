@@ -1,0 +1,45 @@
+include:
+   - selection-compose.yaml
+   - search-compose.yaml
+
+services:
+  main:
+    build:
+      context: .
+      dockerfile: Dockerfile.main
+    hostname: main
+    container_name: main
+    ports:
+      - "8080:8080"
+    depends_on:
+      - selection
+      - search
+
+  cars-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.service.carsget
+    hostname: cars-service
+    container_name: cars-service
+    ports:
+      - "8087:8087"
+    depends_on:
+      - postgresql-cars
+
+  postgresql-cars:
+    image: postgres:17.2-alpine3.21
+    hostname: postgresql-selection
+    container_name: postgresql-cars
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: vehicles
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgresql-cars:/var/lib/postgresql/data
+      - ./sql_scripts/vehicles.sql:/docker-entrypoint-initdb.d/vehicles.sql
+
+volumes:
+  postgresql-cars:
+    driver: local

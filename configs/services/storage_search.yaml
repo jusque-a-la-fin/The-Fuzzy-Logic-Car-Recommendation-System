@@ -1,0 +1,4 @@
+port: :8089
+addr: "redis-search:6379"
+password: ""
+db: 0

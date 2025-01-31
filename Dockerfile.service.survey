@@ -1,0 +1,27 @@
+FROM golang:1.23.5 AS build-stage
+
+WORKDIR /survey
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY api/proto/ ./api/proto
+
+COPY cmd/services/survey/ ./cmd
+
+COPY internal/services/ ./internal/services
+COPY internal/shared/config/ ./internal/shared/config
+
+RUN CGO_ENABLED=0 GOOS=linux go build -o main ./cmd
+
+FROM alpine:latest
+
+WORKDIR /survey
+
+COPY --from=build-stage /survey/main .
+
+COPY configs/services/survey.yaml /configs/services/
+
+EXPOSE 8084
+
+CMD ["./main"]

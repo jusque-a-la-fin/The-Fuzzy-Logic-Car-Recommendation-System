@@ -1,0 +1,7 @@
+port: :8086
+target1: "cars-service:8087"
+target2: "storage-selection:8083"
+
+path1: "../../../internal/services/selection/data/carMakes.json"
+path2: "../../../internal/services/selection/data/priorities.txt"
+path3: "../../../internal/services/selection/data/rules/%d_rules.txt"

@@ -1,0 +1,463 @@
+openapi: 3.1.0
+info:
+  title: Веб-приложение, формирующее рекомендации по выбору автомобилей
+  description: |
+    Данный сервис помогает пользователю, непогруженному в мир автомобилей, найти машины, 
+    отсортированные по таким субъективным характеристикам, как
+    «Комфорт», «Экономичность», «Безопасность», «Динамика», «Управляемость». 
+    Для ранжирования автомобилей применяется алгоритм, использующий методы «нечеткой логики» ("нечеткий алгоритм"). 
+    Веб-приложение построено по принципам «The Clean Architecture» by Robert C. Martin (Uncle Bob): 
+    https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html?clckid=b335004d
+    В этом документе представлена часть сервиса, которая отвечает за простой поиск автомобилей с помощью фильтров без
+    использования "нечеткого алгоритма". На странице результатов поиска пользователям предлагается пройти опрос (ответить на вопрос).
+    Ответы пользователей помогут "нечеткому алгоритму" "обучиться" (а именно настроить такие параметры, как "Экономичность" и "Динамика", 
+    которые будут вычисляться для каждого автомобиля, участвующего в подборе "нечетким алгоритмом"). Остальные параметры "Комфорт", 
+    "Управляемость", "Безопасность" не зависят от оценок пользователей на данном этапе развития приложения, и вычисляются на основе
+    знаний "экспертов". Пользователь имеет один userID и может иметь несколько sessionID (1 и больше). 
+  version: 0.0.1
+
+servers:
+  url: http://localhost:8081
+  description: |
+    Cервер обслуживает поиск автомобилей без применения нечеткого алгоритма. 
+    При любых ошибках на любом url осуществляется перенправление на /search/error/{code}, где
+    на место параметра code вставляется соответствующая ошибка: при отсутствии sessionID в Session Storage 
+    должна быть ошибка 403, в остальных случаях - 500.
+
+paths:
+  /search:
+    post:
+      description: |
+        Сначала сервер собирает данные автомобилей из базы данных (PostgreSQL) согласно параметрам, переданным в теле запроса, 
+        далее извлекает из базы данных (PostgreSQL) текст вопроса, id вопроса и варианты ответа на вопрос.
+        Для получения текста вопроса, id вопроса, вариантов ответа на вопрос сервер получает userID:
+          Если поле isknown из объекта в теле post-запроса имеет значение false, то генерируется userID (который является uuid). 
+          И userID сохраняется в cookies для localhost:8081. Если known имеет значение true, 
+          то userID извлекается из cookies для localhost:8081. 
+        Сгенерированный или полученный userID используется сервером для получения текста вопроса, на который пользователь 
+        с таким userID еще не отвечал. Такой вопрос выбирается рандомно из списка неотвеченных вопросов. 
+        Вместе с текстом вопроса из базы данных сервер извлекает связанные с ним id выбранного вопроса и варианты ответа на него
+
+        Далее сервер сохраняет в базу данных под управлением Redis в хэш (hash) данные: 
+        значение sessionID (идентификатор сессии из тела запроса) должно быть ключом или названием хэша, 
+        а в качестве пар поле-значение: cars - собранные из базы данных (PostgreSQL) автомобили, 
+        question - текст вопроса, questionID - id вопроса, possibleAnswers - варианты ответа на вопрос
+        
+        Клиент отправляет post-запрос на /search из /main, описанного в main.yaml
+        При получении успешного ответа OK (200 - response status code) от сервера на этот post-запрос 
+        осуществляется перенаправление на /search/{guest}.
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                sessionID:
+                  $ref: './main.yaml#/components/schemas/SessionID'
+                  description: |
+                    Хранится в Session Storage для localhost:8080
+                    Каждый пользователь может иметь несколько сессий (по одной на каждую вкладку браузера)
+
+                isknown:
+                  $ref: '#/components/schemas/Isknown'
+                
+                form:
+                  type: object
+                  description: параметры поиска автомобилей
+                  properties:
+                    mark:
+                      type: string
+                      description: Марка авто
+                      example: "honda"
+
+                    model:
+                      type: string
+                      description: Модель авто
+                      example: "civic"
+
+                    gearbox:
+                      type: string
+                      description: Тип коробки передач
+                      examples:
+                        manual:
+                          value: "1"
+                          description: "Механическая"
+
+                        automatic:
+                          value: "AT"
+                          description: "АКПП"
+
+                        cvt:
+                          value: "3"
+                          description: "Вариатор"
+
+                        robotized:
+                          value: "4"
+                          description: "Робот"
+                      
+                    low_price_limit:
+                      type: string
+                      description: Нижний порог цены
+                      example: "865700"
+
+                    high_price_limit:
+                      type: string
+                      description: Верхний порог цены
+                      example: "893678"
+
+                    drive:
+                      type: string
+                      description: Тип привода
+                      examples:
+                        all:
+                          value: "3"
+                          description: "полный"
+
+                        front:
+                          value: "1"
+                          description: "передний"
+
+                        rear:
+                          value: "2"
+                          description: "задний"
+
+                    earliest_year:
+                      type: string
+                      description: Нижняя граница года выпуска
+                      example: "1999"
+
+                    lastest_year:
+                      type: string
+                      description: Верхняя граница года выпуска
+                      example: "2017"
+
+                    fuel:
+                      type: string
+                      description: Тип топлива
+                      examples:
+                        gas:
+                          value: "1"
+                          description: "Бензин"
+
+                        diesel:
+                          value: "2"
+                          description: "Дизель"
+
+                        hybrid:
+                          value: "5"
+                          description: "Гибрид"
+
+                        electricity:
+                          value: "4"
+                          description: "Электричество"
+
+                    new:
+                      type: string
+                      description: Новый ли автомобиль
+                      example: "new"
+
+      responses:
+        - $ref: '#/components/responses/OK'
+        - $ref: '#/components/responses/InternalServerError'
+
+  /search/{guest}:
+    get:
+      description: |
+        Сервер рендерит (заполняет значениями переменных) html-шаблон веб-страницы (offer.html), 
+        отображающей список автомобилей, к которому не был применен нечёткий алгоритм.
+    
+        Значения переменных - это значения полей объекта, описанного в responses.
+        Значения полей (cars, question, questionID, possibleAnswers) объекта в responses 
+        сервер извлекает из хэша (hash) в базе данных под управлением Redis по названию хэша. 
+        Название хэша - это значение sessionID (сервер извлекает sessionID из параметра guest).
+
+        Первоначально по этому пути на странице вместе со списком автомобилей отображается опрос, 
+        и есть query-параметры survey=true и isknown=true. После того, как пользователь ответил на вопрос, 
+        происходит переадресация на /search/{guest}, но query-параметры survey и isknown уже отсутствуют.
+
+        Список автомобилей на странице представляет собой расположенные вертикально друг за другом карточки автомобилей,
+        на каждой из которых есть фото автомобиля, название марки и модели, год выпуска, цена.
+
+        При нажатии на каждую карточку пользователь переходит на /search/{guest}/{carID}
+
+      parameters:
+        - $ref: '#/components/parameters/guestParam'
+        - $ref: '#/components/parameters/surveyParam'
+        - $ref: '#/components/parameters/isknownParam'
+
+      responses:
+        "200":
+          description: |
+            "OK" (Браузер получил веб-страницу и отрендерил её для пользователя).
+  
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  survey:
+                    type: boolean
+                    description: |
+                      Переменная принимает только одно значение - true, что означает, что страница содержит опрос.
+                    example: true
+              
+                  cars:
+                    type: array
+                    decription: автомобили из списка автомобилей.
+                    items:
+                      $ref: './car.yaml#/components/schemas/Сar'
+                  
+                  quantity:
+                    type: integer
+                    description: Количество автомобилей
+                    example: 10
+
+                  indexes: 
+                    type: array
+                    description: |
+                      Индексы автомобилей в массиве от 1 до n, где n - индекс последнего автомобиля.
+                      Нужны для организации цикла по cars.
+                    items:
+                      type: integer
+                    example: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+                  question:
+                    type: string
+                    description: Текст вопроса. Тексты всех вопросов хранятся в файле survey.sql.  
+                    examples: 
+                      question1:
+                        value: "Как Вы думаете, расход топлива в смешанном цикле 11 л/100 км — это:"
+
+                      question2:
+                        value: "Как Вы думаете, время разгона 8 секунд от 0 до 100 км/ч — это:"
+	            
+                  questionID:
+                    $ref: '#/components/schemas/QuestionID'
+                    description: Хранится в атрибуте тега html-страницы. Оттуда копируется в Session Storage для localhost:8081
+	            
+                  possibleAnswers:
+                    type: array
+                    description: Варианты ответа на вопрос.
+                    items:
+                      type: string
+                    examples:
+                      consumption:
+                        value: ["Высокий расход", "Средний расход", "Низкий расход"]
+
+                      dynamics:
+                        value: ["Низкая динамика", "Средняя динамика", "Высокая динамика"]
+                      
+                  homePageLink:
+                    type: string
+                    description: Ссылка на главную страницу /main (main_page.html).
+                    example: "http://localhost:8080/main"
+	            
+                  errorLink:
+                    type: string
+                    description: |
+                      Ссылка на страницу (error.html), отображающую ошибку.
+                    example: "http://localhost:8081/search/error/code/500"
+
+        $ref: '#/components/responses/InternalServerError'
+
+  /search/{guest}/{carID}:
+    get:
+      description: |
+        Сервер рендерит (заполняет значениями переменных) html-шаблон веб-страницы (car_card.html) конкретного автомобиля.
+
+        Значения переменных - это значения полей объекта, описанного в responses.
+        Значение поля car объекта в responses сервер получает так: 
+          1. Получает из хэша (hash) значение поля cars (все автомобили на странице) в базе данных под управлением Redis по названию хэша. 
+             Название хэша - это значение sessionID (сервер извлекает sessionID из параметра guest).
+          2. Извлекает значение параметра carID из url и по индексу carID-1 получает из слайса cars нужный автомобиль, 
+             который и является значением поля car объекта в responses.
+            
+        Первоначально этот путь содержит query-параметры survey=true и isknown=true, 
+        поскольку страница на /search/{guest} содержит опрос.
+        После того, как пользователь прошел опрос, происходит переадресация на /search/{guest}, 
+        но query-параметры survey и isknown в пути /search/{guest} уже отсутствуют. 
+        И когда пользователь в этот раз кликает на карточку автомобиля и переходит на путь /search/{guest}/{carID}, 
+        то путь /search/{guest}/{carID} уже не содержит query-параметры survey и isknown.
+
+        Должна быть возможность вернуться из страницы конкретного автомобиля на страницу всех автомобилей, 
+        которая размещена по пути /search/{guest}. 
+        Ссылка на страницу всех автомобилей - это поле "link" объекта, описанного в responses.
+      
+      parameters:
+        - $ref: '#/components/parameters/guestParam'
+        - $ref: '#components/parameters/carIDParam'
+        - $ref: '#/components/parameters/surveyParam'
+        - $ref: '#/components/parameters/isknownParam'
+
+      responses:
+        "200":
+          description: |
+            "OK" (Браузер получил веб-страницу и отрендерил её для пользователя).
+
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:            
+                  car:
+                    $ref: './car.yaml#/components/schemas/Сar'
+
+                  link:
+                    type: string
+                    description: Ссылка на страницу автомобилей (offer.html).
+                    examples:
+                      visitedWithSurvey:
+                        value: http://localhost:8081/search/guest/915796f8-c428-43bc-908a-310deec4356e?survey=true&isknown=true
+                        description: Пользователь уже посещал сервис и не ответил на вопрос.
+
+                      visitedWithoutSurvey:
+                        value: http://localhost:8081/search/guest/915796f8-c428-43bc-908a-310deec4356e
+                        description: Пользователь уже посещал сервис и ответил на вопрос.
+
+                      NotVisitedWithSurvey:
+                        value: http://localhost:8081/search/guest/915796f8-c428-43bc-908a-310deec4356e?survey=true&isknown=false
+                        description: Пользователь впервые посещает сервис и не ответил на вопрос.
+
+                      NotVisitedWithoutSurvey:
+                        value: http://localhost:8081/search/guest/915796f8-c428-43bc-908a-310deec4356e
+                        description: Пользователь впервые посещает сервис и ответил на вопрос.
+          
+        $ref: '#/components/responses/InternalServerError'
+
+
+
+  /search/answer:
+    description: |
+      Клиент отправляет ответ пользователя на сервер.
+      Сервер также извлекает из cookies userID, чтобы добавить в базу данных ответ для данного пользователя.
+
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              answer:
+                type: string
+                description: answer - ответ пользователя. 
+                examples:
+                  lowConsumption:
+                    value: "Низкий расход"
+                    description: Расход топлива в литрах.
+
+                  avgConsumption:
+                    value: "Средняя расход"
+                    description: Расход топлива в литрах.
+
+                  highConsumption:
+                    value: "Высокий расход"
+                    description: Расход топлива в литрах.
+
+                  lowDynamics:
+                    value: "Низкая динамика"
+                    description: Время разгона от 0 до 100 км/ч в секундах.
+
+                  avgDynamics:
+                    value: "Средняя динамика"
+                    description: Время разгона от 0 до 100 км/ч в секундах.
+
+                  highDynamics:
+                    value: "Высокая динамика"
+                    description: Время разгона от 0 до 100 км/ч в секундах.
+
+              questionID:
+                $ref: '#/components/schemas/QuestionID'
+                description: Извлекается из Session Storage для localhost:8081.
+
+    responses:
+      - $ref: '#/components/responses/OK'
+      - $ref: '#/components/responses/InternalServerError'
+
+  /search/error/{code}:
+    $ref: './main.yaml#/components/pathItems/Errors'
+
+
+components:
+  responses:
+    OK:
+      "200":
+        description: |
+          "OK" — сервер успешно выполнил запрос.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+              example:
+                message: ok
+
+    InternalServerError:
+      "500":
+        description: |
+          "Internal Server Error" — ошибка на стороне сервера. 
+          Браузеру в качестве ответа отправляется только response status code = 500.
+
+  parameters:
+    guestParam:
+      name: guest
+      in: path
+      description: |
+        Параметр guest содержит идентификатор (uuid) пользователя.
+      required: true
+      schema:
+        type: string  
+        example: "c80c5b15-aaa0-492d-b659-ec419c03579d"
+
+    carIDParam:
+      name: carID
+      in: path
+      description: |
+        Параметр carID содержит номер автомобиля в списке, показанном пользователю на веб-странице
+      required: true
+      schema:
+        type: integer
+        example: 1
+
+    surveyParam:
+      name: survey
+      in: query
+      description: |
+        Параметр, определяющий, есть ли на странице опрос: true - есть, 
+        ответ на который помогает "нечеткому алгоритму" обучиться
+        (только значение true, параметр никогда не принимает false).
+      required: false
+      schema:
+        type: boolean
+        example: true
+      style: form
+
+    isknownParam:
+      name: isknown
+      in: query
+      description: |
+        Параметр, определяющий, первый ли раз пользователь посещает сервис.
+      required: false
+      schema:
+        $ref: '#/components/schemas/Isknown'
+      style: form  
+
+  schemas:
+    Isknown:
+      type: boolean
+      examples:
+        known:
+          value: true
+          description: Пользователь уже посещал сервис.
+          
+        unknown:
+          value: false
+          description: Пользователь не посещал сервис.
+
+    QuestionID:
+      type: string
+      description: id вопроса
+      example: "8"

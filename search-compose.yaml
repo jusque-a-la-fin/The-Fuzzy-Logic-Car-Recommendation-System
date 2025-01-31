@@ -1,0 +1,65 @@
+services:
+  search:
+    build:
+      context: .
+      dockerfile: Dockerfile.search
+    hostname: search
+    container_name: search
+    ports:
+      - "8081:8081"
+    depends_on:
+      - survey
+      - cars-service
+      - storage-search
+
+  survey:
+    build:
+      context: .
+      dockerfile: Dockerfile.service.survey
+    hostname: survey
+    container_name: survey
+    ports:
+      - "8084:8084"
+    depends_on:
+      - postgresql-search
+
+  postgresql-search:
+    image: postgres:17.2-alpine3.21
+    hostname: postgresql-search
+    container_name: postgresql-search 
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: survey
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgresql-search:/var/lib/postgresql/data
+      - ./sql_scripts/survey.sql:/docker-entrypoint-initdb.d/survey.sql
+
+  storage-search:
+    build:
+      context: .
+      dockerfile: Dockerfile.search.storage
+    hostname: storage-search
+    container_name: storage-search
+    ports:
+      - "8089:8089"
+    depends_on:
+      - redis-search
+
+  redis-search:
+    image: redis:7.4.2-alpine3.21
+    hostname: redis-search
+    container_name: redis-search
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis-search:/usr/share/redis/data
+
+volumes:
+  redis-search:
+    driver: local
+  
+  postgresql-search:
+    driver: local  

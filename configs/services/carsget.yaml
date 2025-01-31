@@ -1,0 +1,8 @@
+port: :8087
+
+postgre:
+    user: "postgres"
+    password: "password"
+    dbname: "vehicles"
+    host: postgresql-cars
+    sslmode: "disable"

@@ -1,0 +1,32 @@
+FROM golang:1.23.5 AS build-stage
+
+WORKDIR /selection
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY api/proto/ ./api/proto
+
+COPY cmd/services/selection/ ./cmd
+
+COPY entities/ ./entities
+COPY internal/selection/entities ./internal/selection/entities
+COPY internal/services/selection/ ./internal/services/selection
+COPY internal/services/register.go internal/services/run.go ./internal/services/
+COPY internal/shared/config/ ./internal/shared/config
+COPY internal/shared/format/ ./internal/shared/format
+
+RUN CGO_ENABLED=0 GOOS=linux go build -o main ./cmd
+
+FROM alpine:latest
+
+WORKDIR /selection
+
+COPY --from=build-stage /selection/main .
+
+COPY configs/services/selection_service.yaml /configs/services/
+COPY internal/services/selection/data/ /internal/services/selection/data
+
+EXPOSE 8086
+
+CMD ["./main"]

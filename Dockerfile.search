@@ -1,0 +1,33 @@
+FROM golang:1.23.5 AS build-stage
+
+WORKDIR /search
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY api/proto/generated/cars/ ./api/proto/generated/cars
+COPY api/proto/generated/storage/ ./api/proto/generated/storage
+COPY api/proto/generated/survey/ ./api/proto/generated/survey
+COPY api/proto/generated/carsget/ ./api/proto/generated/carsget
+
+COPY cmd/search/ ./cmd
+
+COPY entities/ ./entities
+COPY internal/search/ ./internal/search
+COPY internal/shared/ ./internal/shared
+
+RUN CGO_ENABLED=0 GOOS=linux go build -o main ./cmd
+
+FROM alpine:latest
+
+WORKDIR /search
+
+COPY --from=build-stage /search/main .
+
+COPY configs/search.yaml /configs/
+COPY internal/search/web/ /internal/search/web/ 
+COPY web/ /web/
+
+EXPOSE 8081
+
+CMD ["./main"]

@@ -1,0 +1,47 @@
+services:
+  selection:
+    build:
+      context: .
+      dockerfile: Dockerfile.selection
+    hostname: selection
+    container_name: selection
+    ports:
+      - "8082:8082"
+    depends_on:
+      - selection-service
+      - storage-selection
+
+  storage-selection:
+    build:
+      context: .
+      dockerfile: Dockerfile.selection.storage
+    hostname: storage-selection
+    container_name: storage-selection
+    ports:
+      - "8083:8083"
+    depends_on:
+      - redis-selection
+
+  redis-selection:
+    image: redis:7.4.2-alpine3.21
+    hostname: redis-selection
+    container_name: redis-selection
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-selection:/usr/share/redis/data
+
+  selection-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.service.selection
+    hostname: selection-service
+    container_name: selection-service
+    ports:
+      - "8086:8086"
+    depends_on:
+      - postgresql-cars
+
+volumes:
+  redis-selection:
+    driver: local

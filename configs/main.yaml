@@ -1,0 +1,20 @@
+pattern: "../../internal/main/web/templates/*html"
+path1: "/css"
+root1: "../../internal/main/web/static/css"
+path2: "/js"
+root2: "../../internal/main/web/static/js"
+path3: "/shared-images"
+root3: "../../web/static/images"
+path4: "/shared-js"
+root4: "../../web/static/js"
+
+origin1: "http://localhost:8080"
+method1: "GET"
+method2: "POST"
+method3: "PUT"
+method4: "DELETE"
+header1: "Origin"
+header2: "Content-Length"
+header3: "Content-Type"
+
+addr: :8080

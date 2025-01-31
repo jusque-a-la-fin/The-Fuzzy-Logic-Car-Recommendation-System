@@ -1,0 +1,143 @@
+openapi: 3.1.0
+info:
+  title: Веб-приложение, формирующее рекомендации по выбору автомобилей
+  description: |
+    Данный сервис помогает пользователю, непогруженному в мир автомобилей, найти машины, 
+    отсортированные по таким субъективным характеристикам, как
+    «Комфорт», «Экономичность», «Безопасность», «Динамика», «Управляемость». 
+    Для ранжирования автомобилей применяется алгоритм, использующий методы «нечеткой логики» ("нечеткий алгоритм"). 
+    Веб-приложение построено по принципам «The Clean Architecture» by Robert C. Martin (Uncle Bob): 
+    https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html?clckid=b335004d
+    В этом документе представлена часть сервиса, обслуживающая работу главной страницы сервиса.
+  version: 0.0.1
+
+servers:
+  - url: http://localhost:8080
+    description: |
+      Cервер обслуживает главную страницу:   
+
+      Сервер сохраняет sessionID (идентификатор (uuid) сессии) в html-коде в элементе, невидимом для пользователя. 
+      Далее клиент извлекает sessionID из html-кода и сохраняет в Session Storage для 
+      localhost:8080 перед тем, как пользователь сможет взаимодействовать с приложением.
+      
+      У одного пользователя может быть несколько сессий в разных вкладках браузера. И каждая сессия имеет свой sessionID.
+
+      На главной странице должна быть форма с полями, позволяющими пользователю задать конкретные параметры:
+      марка автомобиля, модель марки, тип коробки передач, минимальная цена и максимальная цена, тип привода,
+      нижняя граница года выпуска и верхняя граница года выпуска, тип топлива и галочка "новый автомобиль",
+      нажатие на которую, означает, что пользователь хочет находить новые автомобили. При отправке формы происходит 
+      отправка post-запроса на /search, описанного в search.yaml. Ниже формы должна располагаться кнопка, 
+      предлагающая пользователю попробовать подбор автомобилей с помощью "нечеткого алгоритма". При нажатии
+      на эту кнопку должно произойти перенаправление на /selection/priorities/{guest}, который описан в selection.yaml.
+      Параметр guest извлекается клиентом из Session Storage для /main 
+      (guest - это sessionID - поле объекта в responses). 
+
+      При любых ошибках на любом url осуществляется перенправление на /main/error/{code}, где
+      на место параметра code вставляется соответствующая ошибка: при отсутствии sessionID в Session
+      Storage должна быть ошибка 403, в остальных случаях - 500. 
+      
+paths:
+  /main:
+    get:
+      description: |
+        Сервер вставляет в шаблон html (main_page.html) данные, указанные в объекте в responses.
+
+      responses:
+        "200":
+          description: |
+            "OK" (Браузер получил веб-страницу и отрендерил её для пользователя)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessionID:
+                    $ref: '#/components/schemas/SessionID'
+
+                  
+  /main/error/{code}:
+    $ref: '#/components/pathItems/Errors'
+
+components:
+  schemas:
+    SessionID:
+      type: string
+      description: |
+        Идентификатор (uuid) сессии. 
+      example: "c80c5b15-aaa0-492d-b659-ec419c03579d"
+
+
+  pathItems:
+    Errors:
+      get:
+        description: |
+          Сервер рендерит (заполняет значениями переменных) html-шаблон веб-страницы, отображающей ошибку (error.html)
+          Значения переменных - это значения полей объекта, описанного в responses.
+
+        parameters:
+          name: code
+          in: path
+          description: коды состояния ответа HTTP
+          required: true
+          schema:
+            type: integer
+          examples: 
+            InternalServerError:
+              500
+            Forbidden:
+              403
+
+          responses:
+            "200":
+              description: |
+                "OK" (Браузер получил веб-страницу и отрендерил её для пользователя)
+
+              content:
+                application/json:
+                  schema:
+                  type: object
+                  properties:
+                    error:
+                      type: string
+                      examples: 
+                        internalServerError:
+                          value: "500: Internal Server Error"
+
+                        forbidden:
+                          value: "403: Forbidden"
+
+      post:
+        description: |
+          Клиент отправляет json в случае ошибки 403 
+          (отсутствие sessionID в Session Storage браузера клиента)
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "sessionID wasn't set in Session Storage"
+
+        responses:
+          "500":
+            description: |
+              "Internal Server Error" Ошибка на стороне сервера. 
+              Браузеру в качестве ответа отправляется только status code = 500
+              В данном случае означает, что сервер не смог десериализовать json, 
+              отправленный клиентом в связи с ошибкой 403 
+
+          "403":
+            description: | 
+              "Forbidden". Ошибка на стороне клиента. 
+              Клиент не имеет sessionID в Session Storage своего браузера
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: "error was accepted"

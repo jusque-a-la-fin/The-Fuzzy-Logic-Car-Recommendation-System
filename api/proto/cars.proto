@@ -1,0 +1,299 @@
+syntax = "proto3";
+
+package cars;
+
+option go_package = "car-recommendation-service/api/proto/generated/cars";
+
+// Car - автомобиль
+message Car {
+    int32 ID = 1;
+    // FullName - название
+    string FullName = 2;
+    // Description - описание
+    string Description = 3;
+    // Generation - название поколения
+    string Generation = 4;
+    // Trimlevel - название комплектации
+    string TrimLevel = 5;
+    // Specifications - технические характеристики
+    Specifications Specs = 6;
+    // Features - опции
+    Features Features = 7;
+    // Offering - сведения для покупателя
+    Offering Offering = 8;
+}
+
+// Specifications - технические характеристики
+message Specifications {
+    // Body - тип кузова
+    string Body = 1;
+    // Length - длина, мм
+    double Length = 2;
+    // Width - ширина, мм
+    double Width = 3;
+    // Height - высота, мм
+    double Height = 4;
+    // GroundClearance - клиренс, мм
+    double GroundClearance = 5;
+    // DragCoefficient - коэффициент аэродинамического сопротивления, cW
+    double DragCoefficient = 6;
+    // FrontTrackWidth - ширина передней колеи, мм
+    double FrontTrackWidth = 7;
+    // BackTrackWidth - ширина задней колеи, мм"
+    double BackTrackWidth = 8;
+    // Wheelbase - колесная база, мм
+    double Wheelbase = 9;
+    // Acceleration0To100 - время разгона 0-100 км/ч, с
+    double Acceleration0To100 = 10;
+    // MaxSpeed - максимальная скорость, км/ч
+    double MaxSpeed = 11;
+    // CityFuelConsumption - расход топлива в городском цикле, л/100 км
+    double CityFuelConsumption = 12;
+    // HighwayFuelConsumption - расход топлива за городом, л/100 км
+    double HighwayFuelConsumption = 13;
+    // MixedFuelConsumption - расход топлива в смешанном цикле, л/100 км
+    double MixedFuelConsumption = 14;
+    // NumberOfSeats - число мест
+    int32 NumberOfSeats = 15;
+    // TrunkVolume - объем багажника, литры
+    double TrunkVolume = 16;
+    // Mass - масса, кг
+    double Mass = 17;
+    // Gearbox - тип трансмиссии
+    string Gearbox = 18;
+    // Drive - тип привода
+    string Drive = 19;
+    // CrashTestEstimate - баллы за краш-тест
+    double CrashTestEstimate = 20;
+    // Engine - двигатель
+    Engine Engine = 21;
+    // SteeringWheel - рулевое колесо
+    SteeringWheel SteeringWheel = 22;
+    // Suspension - подвеска
+    Suspension Suspension = 23;
+    // Brakes - тормоза
+    Brakes Brakes = 24;
+    // Tires - шины
+    Tires Tires = 25;
+}
+
+// Engine - двигатель
+message Engine {
+    // FuelUsed - используемое топливо
+    string FuelUsed = 1;
+    // EngineType - тип двигателя
+    string EngineType = 2;
+    // Capacity - объем двигателя, куб.см
+    double Capacity = 3;
+    // MaxPower - максимальная мощность, л.с.
+    double MaxPower = 4;
+    // MaxTorque - максимальный крутящий момент, Н*м (кг*м) при об./мин.
+    string MaxTorque = 5;
+}
+
+// Перечисление для позиции руля
+enum SteeringWheelPosition {
+    LEFT_POS = 0;
+    RIGHT_POS = 1;
+    UNDEFINED_POS = 2;
+}
+
+// Перечисление для типа усилителя руля
+enum PowerSteering {
+    ELECTRIC_PS = 0;
+    ELECTROHYDRAULIC_PS = 1;
+    HYDRAULIC_PS = 2;
+    NO_PS = 3;
+    UNDEFINED_PS = 4;
+}
+
+// SteeringWheel - рулевое колесо
+message SteeringWheel {
+    // SteeringWheelPosition - положение руля(слева, справа и неизвестно)
+    SteeringWheelPosition SteeringWheelPosition = 1;
+    // PowerSteering - тип усилителя рулевого управления
+    PowerSteering PowerSteering = 2;
+}
+
+// Перечисление для наличия опции
+enum Availability {
+    YES_VALUE = 0;
+    NO_VALUE = 1;
+    OPTION_VALUE = 2;
+    UNDEFINED_VALUE = 3;
+}
+
+// Suspension - подвеска
+message Suspension {
+    // FrontStabilizer - наличие переднего стабилизатора
+    Availability FrontStabilizer = 1;
+    // BackStabilizer - наличие заднего стабилизатора
+    Availability BackStabilizer = 2;
+    // FrontSuspension - название типа передней подвески
+    string FrontSuspension = 3;
+    // BackSuspension - название типа задней подвески
+    string BackSuspension = 4;
+}
+
+// Brakes - тормоза
+message Brakes {
+// FrontBrakes - тип передних тормозов
+    string FrontBrakes = 1;
+    // BackBrakes - тип задних тормозов
+    string BackBrakes = 2;
+    // ParkingBrake - тип стояночного тормоза
+    string ParkingBrake = 3;
+}
+
+// Tires - шины
+message Tires {
+    // FrontTiresWidth - ширина передних шин, мм
+    int32 FrontTiresWidth = 1;
+    // BackTiresWidth - ширина задних шин, мм
+    int32 BackTiresWidth = 2;
+    // FrontTiresAspectRatio - процентное соотношение высоты профиля передних шин к их ширине
+    int32 FrontTiresAspectRatio = 3;
+    // BackTiresAspectRatio - процентное соотношение высоты профиля задних шин к их ширине
+    int32 BackTiresAspectRatio = 4;
+    // FrontTiresRimDiameter - диаметр обода передних шин, мм
+    int32 FrontTiresRimDiameter = 5;
+    // BackTiresRimDiameter - диаметр обода задних шин, мм
+    int32 BackTiresRimDiameter = 6;
+}
+
+// Features - опции
+message Features {
+	// SafetyAndMotionControlSystems - электронные системы безопасности и контроля движения
+    SafetyAndMotionControlSystems SafetyAndMotionControlSystem = 1;
+    // Lights - фонари и фары
+    Lights Lights = 2;
+    // Interior- интерьер
+    Interior Interior = 3;
+    // CabinMicroclimate - микроклимат салона
+    CabinMicroclimate CabinMicroclimate = 4;
+    // ElectricOptions - пакет электрических опций
+    SetOfElectricOptions ElectricOptions = 5;
+    // Airbags - подушки безопасности
+    SetOfAirbags Airbags = 6;
+    // MultimediaSystem - системы мультимедиа
+    MultimediaSystems MultimediaSystems = 7;
+    // CarAlarm - наличие сигнализации
+    Availability CarAlarm = 8;
+    // Color - цвет
+    string Color = 9;
+}
+
+// SafetyAndMotionControlSystems - электронные системы безопасности и контроля движения
+message SafetyAndMotionControlSystems {
+    // ABS - наличие антиблокировочной системы (ABS)
+    Availability ABS = 1;
+    // ESP - наличие системы электронного контроля устойчивости (ESP)
+    Availability ESP = 2;
+    // EBD - наличие системы распределения тормозного усилия (EBD)
+    Availability EBD = 3;
+    // BAS - наличие вспомогательной системы торможения (BAS)
+    Availability BAS = 4;
+    // TCS - наличие антипробуксовочной системы (TCS)
+    Availability TCS = 5;
+    // FrontParkingSensor - наличие переднего парктроника
+    Availability FrontParkingSensor = 6;
+    // BackParkingSensor - наличие заднего парктроника
+    Availability BackParkingSensor = 7;
+    // RearViewCamera - наличие камеры заднего обзора
+    Availability RearViewCamera = 8;
+    // CruiseControl - наличие круиз-контроля
+    Availability CruiseControl = 9;
+}
+
+// Lights - фонари и фары
+message Lights {
+    string Headlights = 1;
+    // LEDRunningLights - наличие светодиодных ходовых огней
+    Availability LEDRunningLights = 2;
+    // LEDTailLights - наличие светодиодных задних фонарей
+    Availability LEDTailLights = 3;
+    // LightSensor - наличие датчика света
+    Availability LightSensor = 4;
+    // FrontFogLights - наличие передних противотуманных фар
+    Availability FrontFogLights = 5;
+    // BackFogLights - наличие задних противотуманных фонарей
+    Availability BackFogLights = 6;
+}
+
+// Interior - интерьер
+message Interior {
+    // Upholstery - тип обивки салона
+    string Upholstery = 1;
+}
+
+// CabinMicroclimate - микроклимат салона
+message CabinMicroclimate {
+    // AirConditioner - наличие кондиционера
+    Availability AirConditioner = 1;
+    // ClimateControl - наличие климат-контроля
+    Availability ClimateControl = 2;
+}
+
+// SetOfElectricOptions - пакет электрических опций
+message SetOfElectricOptions {
+    // ElectricFrontSideWindowsLifts - наличие электрических передних стеклоподъемников
+    Availability ElectricFrontSideWindowsLifts = 1;
+    // ElectricBackSideWindowsLifts - наличие электрических задних стеклоподъемников
+    Availability ElectricBackSideWindowsLifts = 2;
+    // ElectricHeatingOfFrontSeats - наличие электроподогрева передних сидений
+    Availability ElectricHeatingOfFrontSeats = 3;
+    // ElectricHeatingOfBackSeats - наличие электроподогрева задних сидений
+    Availability ElectricHeatingOfBackSeats = 4;
+    // ElectricHeatingOfSteeringWheel - наличие электроподогрева рулевого колеса
+    Availability ElectricHeatingOfSteeringWheel = 5;
+    // ElectricHeatingOfWindshield - наличие электроподогрева лобового стекла
+    Availability ElectricHeatingOfWindshield = 6;
+    // ElectricHeatingOfRearWindow -- наличие обогрева заднего стекла
+    Availability ElectricHeatingOfRearWindow = 7;
+    // ElectricHeatingOfSideMirrors - наличие электроподогрева боковых зеркал
+    Availability ElectricHeatingOfSideMirrors = 8;
+    // ElectricDriveOfDriverSeat - наличие электропривода водительского сидения
+    Availability ElectricDriveOfDriverSeat = 9;
+    // ElectricDriveOfFrontSeats - наличие электропривода передних сидений
+    Availability ElectricDriveOfFrontSeats = 10;
+    // ElectricDriveOfSideMirrors - наличие электропривода боковых зеркал
+    Availability ElectricDriveOfSideMirrors = 11;
+    // ElectricTrunkOpener - наличие электропривода багажника
+    Availability ElectricTrunkOpener = 12;
+    // RainSensor - наличие датчика дождя
+    Availability RainSensor = 13;
+}
+
+// SetOfAirbags - подушки безопасности
+message SetOfAirbags {
+    // DriverAirbag - наличие водительской подушки безопасности
+    Availability DriverAirbag = 1;
+    // FrontPassengerAirbag - наличие подушки безопасности переднего пассажира
+    Availability FrontPassengerAirbag = 2;
+    // SideAirbags - наличие боковых подушек безопасности
+    Availability SideAirbags = 3;
+    // CurtainAirbags - наличие подушек безопасности-шторок
+    Availability CurtainAirbags = 4;
+}
+
+// MultimediaSystems - системы мультимедиа
+message MultimediaSystems {
+    // OnBoardComputer - наличие бортового компьютера
+    Availability OnBoardComputer = 1;
+    // MP3Support - наличие поддержки MP3
+    Availability MP3Support = 2;
+    // HandsFreeSupport - наличие поддержки Hands free
+    Availability HandsFreeSupport = 3;
+}
+
+// Offering - сведения для покупателя
+message Offering {
+    // Price - цена, руб
+    string Price = 1;
+    // Year - год выпуска
+    int32 Year = 2;
+    // Kilometrage - пробег, км
+    string Kilometrage = 3;
+    // PhotoURLs - ссылки на фотографии
+    repeated string PhotoURLs = 4;
+}

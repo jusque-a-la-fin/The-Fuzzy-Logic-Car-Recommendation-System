@@ -1,0 +1,8 @@
+port: :8084
+
+postgre:
+    user: "postgres"
+    password: "password"
+    dbname: "survey"
+    host: postgresql-search
+    sslmode: "disable"

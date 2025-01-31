@@ -1,0 +1,26 @@
+.form-check-input:hover{
+    cursor: pointer;
+}
+
+.center{
+    margin-left: auto;
+    margin-right: auto;
+}
+
+form {
+  text-align: left;
+  padding-left: 20px;
+  font-size: large;
+}
+
+#question {
+    margin: 0 auto;
+    border-radius: 15px;
+    background-color: grey;
+    width: 800px;
+    height: 220px;
+
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
+    <title>Cars</title>
+    <link rel="icon" href="/shared-images/car.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/main_page.css"/>
+  </head>
+  <body>
+    <form id="usual_search">
+      <h2 class="header">Обычный поиск автомобиля<h2></h2>
+      <div class="container1">
+        <div class="form-row">
+          <div class="form-group col-md-1.5 pr-4">
+            <select class="selectpicker" name="make" id="make" data-live-search="true">
+              <option selected disabled class="text-hide">Марка</option>
+              <option value="all">Любая</option>
+              <optgroup label="Россия">
+                <option id="LADA" value="LADA">Лада</option>
+              </optgroup>
+              <optgroup label="Германия">
+                <option id="BMW" value="BMW">BMW</option>
+                <option id="Volkswagen" value="Volkswagen">Volkswagen</option>
+                <option id="Opel" value="Opel">Opel</option>
+              </optgroup>
+              <optgroup label="Япония">
+                <option id="Toyota" value="Toyota">Toyota</option>
+                <option id="Mitsubishi" value="Mitsubishi">Mitsubishi</option>
+              </optgroup>
+              <optgroup label="Китай">
+                <option id="Great Wall" value="Great Wall">Great Wall</option>
+              </optgroup>
+              <optgroup label="Южная Корея">
+                <option id="Kia" value="Kia">Kia</option>
+              </optgroup>
+              <optgroup label="Франция">
+                <option id="Renault" value="Renault">Renault</option>
+              </optgroup>
+              <optgroup label="США">
+                <option id="Ford" value="Ford">Ford</option>
+              </optgroup>
+              <optgroup label="Великобритания">
+                <option id="Land Rover" value="Land Rover">Land Rover</option>
+              </optgroup>
+              <optgroup label="Другие страны">
+                <option id="Skoda" value="Skoda">Skoda</option>
+              </optgroup>
+            </select>
+          </div>
+          <div class="form-group col-md-3 pr-4">
+            <select class="form-control" name="model" id="model" disabled>
+              <option selected disabled class="text-hide">Модель</option>
+              <option id="LADA" value="all">Любая</option>
+              <option id="LADA" value="'4x4 2121 Нива'">4x4 2121 Нива</option>      
+              <option id="BMW" value="all">Любая</option>
+              <option id="BMW" value="'7 Series'">7 Series</option>   
+              <option id="Volkswagen" value="all">Любая</option>
+              <option id="Volkswagen" value="Polo">Polo</option>
+              <option id="Opel" value="all">Любая</option>
+              <option id="Opel" value="Antara">Antara</option>
+              <option id="Toyota" value="all">Любая</option>
+              <option id="Toyota" value="Avensis">Avensis</option>
+              <option id="Mitsubishi" value="all">Любая</option>
+              <option id="Mitsubishi" value="Lancer">Lancer</option>
+              <option id="Great Wall" value="all">Любая</option>
+              <option id="Great Wall" value="'Hover H5'">Hover H5</option>
+              <option id="Kia" value="all">Любая</option>
+              <option id="Kia" value="Rio">Rio</option>
+              <option id="Renault" value="all">Любая</option>
+              <option id="Renault" value="Megane">Megane</option>
+              <option id="Ford" value="all">Любая</option>
+              <option id="Ford" value="Mondeo">Mondeo</option>
+              <option id="Land Rover" value="all">Любая</option>
+              <option id="Land Rover" value="Freelander">Freelander</option>
+              <option id="Octavia" value="all">Любая</option>
+              <option id="Octavia" value="Octavia">Octavia</option>
+            </select>
+          </div>
+          <div class="form-group col-md-1.5 pr-4">
+            <select class="form-control" name="gearbox" id="gearbox">
+              <option selected disabled class="text-hide">Коробка передач</option>
+              <option value="МКПП">МКПП</option>
+              <optgroup label="Автоматическая">
+                <option value="АКПП">АКПП</option>
+                <option value="Вариатор">Вариатор</option>
+              </optgroup>
+            </select>
+          </div>
+        </div>
+      </div>
+      </div>
+      <div class="container2">
+        <div class="form-row">
+          <div class="form-group col-md-4 pr-4">
+            <div class="input-group mb-3">
+              <input type="text" name="low_price_limit" id="low_price_limit" class="form-control" placeholder="Цена, от" aria-describedby="basic-addon2">
+              <div class="input-group-append">
+                <span class="input-group-text" id="basic-addon2">₽</span>
+              </div>
+            </div>
+            <div class="error low_price"></div>
+          </div>
+          <div class="form-group col-md-4 pr-4">
+            <div class="input-group mb-3">
+              <input type="text" name="high_price_limit" id="high_price_limit" class="form-control" placeholder="Цена, до" aria-describedby="basic-addon2">
+              <div class="input-group-append">
+                <span class="input-group-text" id="basic-addon2">₽</span>
+              </div>
+            </div>
+            <div class="error high_price"></div>
+          </div>
+          <div class="form-group col-md-3 pr-4">
+            <select class="form-control" name="drive" id="drive">
+              <option selected disabled class="text-hide">Привод</option>
+              <option value="Передний FF">Передний FF</option>
+              <option value="Полный 4WD">Полный 4WD</option>
+              <option value="Задний FR">Задний FR</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="container3">
+        <div class="form-row">
+          <div class="form-group col-md-3 pr-4">
+            <select class="form-control" name="earliest_year" id="older">
+              <option selected disabled class="text-hide">Год, от</option>
+              <option>2024</option>
+              <option>2023</option>
+              <option>2022</option>
+              <option>2021</option>
+              <option>2020</option>
+              <option>2019</option>
+              <option>2018</option>
+              <option>2017</option>
+              <option>2016</option>
+              <option>2015</option>
+              <option>2014</option>
+              <option>2013</option>
+              <option>2012</option>
+              <option>2011</option>
+              <option>2010</option>
+              <option>2009</option>
+              <option>2008</option>
+              <option>2007</option>
+              <option>2006</option>
+              <option>2005</option>
+              <option>2004</option>
+              <option>2003</option>
+              <option>2002</option>
+              <option>2001</option>
+              <option>2000</option>
+              <option>1999</option>
+              <option>1998</option>
+              <option>1997</option>
+              <option>1996</option>
+              <option>1995</option>
+              <option>1994</option>
+              <option>1993</option>
+              <option>1992</option>
+              <option>1991</option>
+              <option>1990</option>
+              <option>1989</option>
+              <option>1988</option>
+              <option>1987</option>
+              <option>1986</option>
+              <option>1985</option>
+              <option>1984</option>
+              <option>1983</option>
+              <option>1982</option>
+              <option>1981</option>
+              <option>1980</option>
+              <option>1979</option>
+              <option>1978</option>
+              <option>1977</option>
+              <option>1976</option>
+              <option>1975</option>
+              <option>1974</option>
+              <option>1973</option>
+              <option>1972</option>
+              <option>1971</option>
+              <option>1970</option>
+              <option>1969</option>
+              <option>1968</option>
+              <option>1967</option>
+              <option>1966</option>
+              <option>1965</option>
+              <option>1964</option>
+              <option>1963</option>
+              <option>1962</option>
+              <option>1961</option>
+              <option>1960</option>
+              <option>1959</option>
+              <option>1958</option>
+              <option>1957</option>
+              <option>1956</option>
+              <option>1955</option>
+              <option>1954</option>
+              <option>1953</option>
+              <option>1952</option>
+              <option>1951</option>
+              <option>1950</option>
+            </select>
+          </div>
+          <div class="form-group col-md-3 pr-4">
+            <select class="form-control" name="lastest_year" id="newer">
+              <option selected disabled class="text-hide">Год, до</option>
+              <option>2024</option>
+              <option>2023</option>
+              <option>2022</option>
+              <option>2021</option>
+              <option>2020</option>
+              <option>2019</option>
+              <option>2018</option>
+              <option>2017</option>
+              <option>2016</option>
+              <option>2015</option>
+              <option>2014</option>
+              <option>2013</option>
+              <option>2012</option>
+              <option>2011</option>
+              <option>2010</option>
+              <option>2009</option>
+              <option>2008</option>
+              <option>2007</option>
+              <option>2006</option>
+              <option>2005</option>
+              <option>2004</option>
+              <option>2003</option>
+              <option>2002</option>
+              <option>2001</option>
+              <option>2000</option>
+              <option>1999</option>
+              <option>1998</option>
+              <option>1997</option>
+              <option>1996</option>
+              <option>1995</option>
+              <option>1994</option>
+              <option>1993</option>
+              <option>1992</option>
+              <option>1991</option>
+              <option>1990</option>
+              <option>1989</option>
+              <option>1988</option>
+              <option>1987</option>
+              <option>1986</option>
+              <option>1985</option>
+              <option>1984</option>
+              <option>1983</option>
+              <option>1982</option>
+              <option>1981</option>
+              <option>1980</option>
+              <option>1979</option>
+              <option>1978</option>
+              <option>1977</option>
+              <option>1976</option>
+              <option>1975</option>
+              <option>1974</option>
+              <option>1973</option>
+              <option>1972</option>
+              <option>1971</option>
+              <option>1970</option>
+              <option>1969</option>
+              <option>1968</option>
+              <option>1967</option>
+              <option>1966</option>
+              <option>1965</option>
+              <option>1964</option>
+              <option>1963</option>
+              <option>1962</option>
+              <option>1961</option>
+              <option>1960</option>
+              <option>1959</option>
+              <option>1958</option>
+              <option>1957</option>
+              <option>1956</option>
+              <option>1955</option>
+              <option>1954</option>
+              <option>1953</option>
+              <option>1952</option>
+              <option>1951</option>
+              <option>1950</option>
+            </select>
+          </div>
+          <div class="form-group col-md-4 pr-4">
+            <select class="form-control" name="fuel" id="fuel">
+              <option selected disabled class="text-hide">Топливо</option>
+              <option value="Бензин">Бензин</option>
+              <option value="Дизель">Дизель</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      </div> 
+      <div class="form-check" id="new">
+        <input type="checkbox" class="form-check-input" name="new" id="is_new_car" value="new">
+        <label class="form-check-label" for="new" style="font-size: large">Новый автомобиль</label>
+      </div>
+      <button id="searchButton" class="btn btn-primary submit_button" type="button">Найти</button>        
+      
+    </form>
+
+      <div id="fuzzy_algorithm" onclick="getSelection()">
+        <b>Подобрать лучший автомобиль&nbsp&nbsp<i class="fa-solid fa-car fa-2x"></i></b>     
+      </div>
+  
+    <div id="preloader"></div>
+    <div id="loader"></div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+    <script type="module" src="/js/main_page.js"></script>
+    <script type="module" src="/shared-js/utils.js"></script>
+    <script>
+      var sessionID = "{{.sessionID}}";
+      sessionStorage.setItem('sessionID', sessionID);
+  </script>
+  </body>
+</html>

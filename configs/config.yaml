@@ -1,0 +1,13 @@
+path1: "/shared-css"
+root1: "../../web/static/css"
+path2: "/shared-js"
+root2: "../../web/static/js"
+path3: "/shared-images"
+root3: "../../web/static/images"
+
+path4: "/css"
+root4: "../web/static/css"
+path5: "/js"
+root5: "../web/static/js"
+path6: "/images"
+root6: "../web/static/images"

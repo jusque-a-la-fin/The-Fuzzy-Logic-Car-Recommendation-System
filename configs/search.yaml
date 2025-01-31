@@ -1,0 +1,28 @@
+pattern: "../../web/templates/*.html"
+file: "../../internal/search/web/templates/survey.html"
+
+path1: "/shared-css"
+root1: "../../web/static/css"
+path2: "/shared-js"
+root2: "../../web/static/js"
+path3: "/css"
+root3: "../../internal/search/web/static/css"
+path4: "/js"
+root4: "../../internal/search/web/static/js"
+path5: "/shared-images"
+root5: "../../web/static/images"
+
+origin1: "http://localhost:8080"
+method1: "GET"
+method2: "POST"
+method3: "PUT"
+method4: "DELETE"
+header1: "Origin"
+header2: "Content-Length"
+header3: "Content-Type"
+allowCredentials: "true"
+
+addr1: "storage-search:8089"
+addr2: "survey:8084"
+addr3: "cars-service:8087"
+addr: :8081
