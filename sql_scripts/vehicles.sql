@@ -1304,8 +1304,6 @@ VALUES (
 INSERT INTO engines (fuel_used, engine_type, capacity, power, max_torque)
 VALUES ('Дизель', 'Рядный, 4-цилиндровый', 1996, 150, '310 (32) / 2800');
 
-INSERT INTO gearboxes (gearbox)
-VALUES ('АКПП');
 
 INSERT INTO tires (back_tires_width, front_tires_width, front_tires_aspect_ratio, back_tires_aspect_ratio, front_tires_rim_diameter, back_tires_rim_diameter)
 VALUES (235, 235, 65, 65, 17, 17);
